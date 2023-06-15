@@ -5,7 +5,7 @@ import EmojiPicker from './EmojiPicker';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { EmojiEmotions, Close } from '@mui/icons-material';
 
-const ChatMessageBar = ({ onSend, drawerWidth }) => {
+const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
   const [message, setMessage] = useState('');
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [inputRows, setInputRows] = useState(1); // Number of rows in the input field
@@ -89,7 +89,10 @@ const ChatMessageBar = ({ onSend, drawerWidth }) => {
         rows={inputRows}
         placeholder='Type your message here'
         value={message}
-        onChange={(event) => setMessage(event.target.value)}
+        onChange={(event) => {
+          setMessage(event.target.value);
+          typingHandler();
+        }}
         onKeyDown={handleKeyDown}
         sx={{ marginLeft: '30px' }}
       />

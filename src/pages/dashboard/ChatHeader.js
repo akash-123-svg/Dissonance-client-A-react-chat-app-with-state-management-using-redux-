@@ -34,8 +34,13 @@ const ChatHeader = () => {
   const [severity, setSeverity] = useState('success');
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const navigate = useNavigate();
-  const addUser = (value, isGroup) => {
-    const postData = { name: '', isGroup: !!isGroup, user: value };
+  const addUser = (value, isGroup, name = '') => {
+    const postData = {
+      name,
+      isGroup: !!isGroup,
+      user: value,
+      _id: localStorage.getItem('_id'),
+    };
     axios
       .post(`${baseLocalApi}/rooms`, postData, {
         headers: {
@@ -44,8 +49,21 @@ const ChatHeader = () => {
       })
       .then((response) => {
         console.log('Response:', response.data.room);
-        setChatList({ rooms: [response.data.room, ...rooms] });
-        setCurrentRoom(response.data.room);
+        let found = false;
+        for (let i = 0; i < rooms.length; i += 1) {
+          if (response.data.room._id === rooms[i]._id) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          setChatList({ rooms: [response.data.room, ...rooms] });
+          setCurrentRoom(response.data.room);
+        } else {
+          setSeverity('warning');
+          setSnackBarMessage(`This chat is already open`);
+          setOpenSnackBar(true);
+        }
       })
       .catch((error) => {
         setSeverity('error');

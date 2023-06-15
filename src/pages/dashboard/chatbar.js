@@ -11,14 +11,17 @@ import { baseLocalApi } from '../../utils/utility';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators } from '../../state/index';
+import CircleNumber from '../../components/CircleNumber';
 
 export default function AlignItemsList({ setRoom }) {
   // const [data, setData] = useState([]);
   const dispatch = useDispatch();
   const { setChatList } = bindActionCreators(actionCreators, dispatch);
-  const data = useSelector((state) => {
-    return state.chatListReducer.rooms;
-  });
+  const data = [
+    ...useSelector((state) => {
+      return state.chatListReducer.rooms;
+    }),
+  ];
   useEffect(() => {
     axios
       .get(`${baseLocalApi}/rooms/${localStorage.getItem('_id')}`, {
@@ -28,45 +31,52 @@ export default function AlignItemsList({ setRoom }) {
       })
       .then((res) => {
         setChatList({ rooms: res.data.rooms });
+        console.log(data);
       })
       .catch((err) => console.error(err));
   }, []);
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {data.map((el, index) => (
-        <div key={index}>
-          <ListItem
-            alignItems='flex-start'
-            className='hover:bg-sky-100 cursor-pointer transition duration-300'>
-            <ListItemAvatar>
-              <Avatar
-                alt={el.name}
-                src={el.photoUrl || '/static/images/avatar/1.jpg'}
-                sx={{ backgroundColor: 'orange' }}
-              />
-            </ListItemAvatar>
-            <ListItemText
-              onClick={() => {
-                setRoom({ ...data[index] });
-              }}
-              primary={`${el.name}`}
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: 'inline' }}
-                    component='span'
-                    variant='body2'
-                    color='text.primary'>
-                    {(el.lastMessage && el.lastMessage.senderName) || ''}
-                  </Typography>
-                  {` — ${(el.lastMessage && el.lastMessage.message) || ''}`}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant='inset' component='li' />
-        </div>
-      ))}
+      {data.map(
+        (el, index) =>
+          el && (
+            <div key={index}>
+              <ListItem
+                alignItems='flex-start'
+                className='hover:bg-sky-100 cursor-pointer transition duration-300'>
+                <ListItemAvatar>
+                  <Avatar
+                    alt={!el.isGroup ? el.receiverName : el.name}
+                    src={el.photoUrl || '/static/images/avatar/1.jpg'}
+                    sx={{ backgroundColor: 'orange' }}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  onClick={() => {
+                    setRoom({ ...data[index] });
+                  }}
+                  primary={!el.isGroup ? el.receiverName : el.name}
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        sx={{ display: 'inline' }}
+                        component='span'
+                        variant='body2'
+                        color={el.notSeenCount > 0 ? 'green' : 'text.primary'}>
+                        {(el.lastMessage && el.lastMessage.senderName) || ''}
+                      </Typography>
+                      {` — ${(el.lastMessage && el.lastMessage.message) || ''}`}
+                    </React.Fragment>
+                  }
+                />
+                {el.notSeenCount > 0 && (
+                  <CircleNumber number={el.notSeenCount} />
+                )}
+              </ListItem>
+              <Divider variant='inset' component='li' />
+            </div>
+          )
+      )}
     </List>
   );
 }

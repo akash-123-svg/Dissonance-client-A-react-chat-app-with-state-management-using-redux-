@@ -25,6 +25,7 @@ export default function Modal({
   const [severity, setSeverity] = useState('success');
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const [value, setValue] = React.useState('');
+  const [roomName, setRoomName] = useState('');
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -33,6 +34,20 @@ export default function Modal({
     setOpen(false);
   };
   const handleSubmit = () => {
+    if (isGroup) {
+      if (!roomName) {
+        setSeverity('error');
+        setSnackBarMessage('Please enter valid group name!');
+        setOpenSnackBar(true);
+        return;
+      }
+      if (roomName.length > 30) {
+        setSeverity('error');
+        setSnackBarMessage('Please enter shorter group name!');
+        setOpenSnackBar(true);
+        return;
+      }
+    }
     if (
       !(
         value &&
@@ -45,7 +60,8 @@ export default function Modal({
       setOpenSnackBar(true);
       return;
     }
-    addUser(value, isGroup);
+
+    addUser(value, isGroup, roomName);
     setValue('');
     handleClose();
   };
@@ -69,18 +85,30 @@ export default function Modal({
       />
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
+        <DialogTitle>Start Messaging</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
+            To start messaging, please enter mobile number here.
           </DialogContentText>
+          {isGroup && (
+            <TextField
+              autoFocus
+              margin='dense'
+              id='name'
+              label='Group name'
+              type='text'
+              fullWidth
+              variant='standard'
+              onChange={(event) => {
+                setRoomName(event.target.value);
+              }}
+            />
+          )}
           <TextField
             autoFocus
             margin='dense'
-            id='name'
+            id='mobile'
             label='Mobile number'
-            type='email'
             fullWidth
             variant='standard'
             onChange={(event) => {

@@ -9,13 +9,17 @@ import {
   ScheduleTwoTone,
 } from '@mui/icons-material';
 
-const MessageBox = ({ message, sender, align, timestamp, status }) => {
+const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
   const alignStyle = {
     justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
   };
 
   const messageBoxStyle = {
-    background: align === 'right' ? '#2979ff' : '#f5f5f5',
+    background: element
+      ? 'transparent'
+      : align === 'right'
+      ? '#2979ff'
+      : '#f5f5f5',
     color: align === 'right' ? '#fff' : '#000',
     borderRadius: '8px',
     padding: '8px',
@@ -66,6 +70,7 @@ const MessageBox = ({ message, sender, align, timestamp, status }) => {
         {sender}
       </Typography>
       <Box style={messageBoxStyle}>
+        {element}
         <Typography variant='body1' component='p' sx={{ marginBottom: '10px' }}>
           {message}
         </Typography>

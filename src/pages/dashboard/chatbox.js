@@ -24,14 +24,26 @@ import io from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators } from '../../state/index';
+import Lottie from 'react-lottie';
+import animationData from '../../animations/typing.json';
 
 const drawerWidth = 340;
 
 let socket, selectedMessagesComp;
 
-const updateLastMessage = (currRooms, room, message) => {
-  const updatedRooms = [...currRooms];
-  for (let i = 0; i < updatedRooms.length; i += 1) {
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData,
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
+};
+
+const updateLastMessage = (currRooms, room, message, cnt) => {
+  const updatedRooms = JSON.parse(JSON.stringify(currRooms));
+  let i = 0;
+  for (i = 0; i < updatedRooms.length; i += 1) {
     if (updatedRooms[i]._id === room._id) {
       const newMessage = { ...message };
       newMessage.message =
@@ -39,16 +51,53 @@ const updateLastMessage = (currRooms, room, message) => {
           ? newMessage.message.substr(0, 35) + '...'
           : newMessage.message;
       updatedRooms[i].lastMessage = newMessage;
+      if (cnt) {
+        if (!updatedRooms[i].notSeenCount) updatedRooms[i].notSeenCount = 0;
+        updatedRooms[i].notSeenCount += 1;
+      }
       break;
     }
   }
+  if (i === updatedRooms.length && updatedRooms.length) {
+    const newRoom = {
+      _id: room._id,
+      name: room.name,
+      photoUrl: room.photoUrl,
+      createdOn: room.createdOn,
+      admins: room.admins,
+      users: room.users,
+      lastMessage: message,
+      notSeenCount: 1,
+    };
+    console.log('new room', newRoom);
+    updatedRooms.splice(0, 0, newRoom);
+  }
+  updatedRooms.sort((a, b) => {
+    if (!a.lastMessage.createdOn) {
+      if (!b.lastMessage.createdOn) {
+        return moment(a.createdOn).isAfter(moment(b.createdOn)) ? -1 : 1;
+      }
+      return moment(a.createdOn).isAfter(moment(b.lastMessage.createdOn))
+        ? -1
+        : 1;
+    }
+    if (!b.lastMessage.createdOn) {
+      return moment(a.createdOn).isAfter(moment(b.lastMessage.createdOn))
+        ? -1
+        : 1;
+    }
+    return moment(a.lastMessage.createdOn).isAfter(
+      moment(b.lastMessage.createdOn)
+    )
+      ? -1
+      : 1;
+  });
   return updatedRooms;
 };
 
 const updateMessage = (messages, message, setMessage) => {
-  console.log('Amir');
   for (let i = 0; i < messages.length; i += 1) {
-    if (messages[i]._id == message._id) {
+    if (messages[i]._id === message._id) {
       messages[i].status = 'seen';
       setMessage([...messages]);
       break;
@@ -66,7 +115,9 @@ function ResponsiveDrawer(props) {
   const [receiver, setReceiver] = useState({});
   const [messages, setMessages] = useState([]);
   const [socketConnected, setSocketConnected] = useState(false);
-  const [mobileOpen, setMobileOpen] = React.useState(window.innerWidth <= 600);
+  const [mobileOpen, setMobileOpen] = useState(window.innerWidth <= 600);
+  const [typing, setTyping] = useState(false);
+  const [online, setOnline] = useState(false);
   const navigate = useNavigate();
   const room = useSelector((state) => {
     return state.roomReducer;
@@ -76,20 +127,56 @@ function ResponsiveDrawer(props) {
       return state.roomReducer;
     })
   );
-  const rooms = [
-    ...useSelector((state) => {
-      return state.chatListReducer.rooms;
-    }),
-  ];
+
+  const rooms = JSON.parse(
+    JSON.stringify(
+      useSelector((state) => {
+        return state.chatListReducer.rooms;
+      })
+    )
+  );
+
+  const checkUserOnlineStatus = () => {
+    setOnline(false);
+    if (receiver && receiver._id) {
+      socket.emit('pingForOnlineStatus', {
+        userId: localStorage.getItem('_id'),
+        newMessageReceived: currRoom.current,
+        receiverId: receiver._id,
+      });
+    }
+  };
+
   useEffect(() => {
     if (!localStorage.getItem('Token')) {
       navigate('/signin');
       // return;
     }
+    setOnline(false);
+    setTyping(false);
 
-    socket = io(baseApi);
+    socket = io(baseApi, {
+      auth: {
+        _id: localStorage.getItem('_id'),
+      },
+    });
     socket.emit('setup', { _id: localStorage.getItem('_id') });
-    socket.on('connection', () => setSocketConnected(true));
+    socket.on('connected', () => setSocketConnected(true));
+
+    socket.on('typing', ({ userId, roomId }) => {
+      if (
+        userId !== localStorage.getItem('_id') &&
+        roomId === currRoom.current._id
+      ) {
+        setTyping(true);
+      }
+    });
+
+    socket.on('stop typing', () => setTyping(false));
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected !!');
+    });
     const handleResize = () => {
       const newWidth = window.innerWidth;
       setWindowWidth(newWidth);
@@ -103,7 +190,6 @@ function ResponsiveDrawer(props) {
     window.addEventListener('resize', handleResize);
     if (room._id) {
       setMobileOpen(false);
-      socket.emit('join chat', room._id);
       if (!room.isGroup) {
         const receiverId =
           room.users[0] === localStorage.getItem('_id')
@@ -123,7 +209,7 @@ function ResponsiveDrawer(props) {
             console.error(err);
           });
       }
-
+      socket.emit('join chat', room._id);
       axios
         .get(`${baseLocalApi}/messages/${room._id}`, {
           headers: {
@@ -131,12 +217,12 @@ function ResponsiveDrawer(props) {
           },
         })
         .then((response) => {
-          selectedMessagesComp = messages;
           setMessages(response.data.messages);
         })
         .catch((error) => {
           console.error('Error:', error.message);
         });
+      updateMessagesAsSeen();
     }
 
     scrollToBottom();
@@ -149,7 +235,6 @@ function ResponsiveDrawer(props) {
 
   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {
-      console.log(newMessageReceived);
       if (
         newMessageReceived &&
         currRoom.current &&
@@ -157,17 +242,29 @@ function ResponsiveDrawer(props) {
         newMessageReceived._id === currRoom.current._id
       ) {
         setMessages([...messages, newMessageReceived.message]);
+        const updatedRooms = updateLastMessage(
+          rooms,
+          currRoom.current,
+          newMessageReceived.message
+        );
+        if (updatedRooms.length) {
+          setChatList({ rooms: updatedRooms });
+        }
         !currRoom.current.isGroup &&
           socket.emit('message delivered ack', {
             userId: localStorage.getItem('_id'),
             newMessageReceived,
           });
-        // const updatedRooms = updateLastMessage(
-        //   rooms,
-        //   currRoom.current,
-        //   newMessageReceived.message
-        // );
-        // setChatList({ rooms: updatedRooms });
+      } else {
+        const updatedRooms = updateLastMessage(
+          rooms,
+          newMessageReceived,
+          newMessageReceived.message,
+          1
+        );
+        if (updatedRooms.length) {
+          setChatList({ rooms: updatedRooms });
+        }
       }
     });
     socket.on('message received ack', (newMessageReceived) => {
@@ -177,26 +274,21 @@ function ResponsiveDrawer(props) {
         newMessageReceived._id === currRoom.current._id &&
         !currRoom.current.isGroup
       ) {
-        const patchData = {
-          roomId: currRoom.current._id,
-          receiverId: localStorage.getItem('_id'),
-        };
-        axios
-          .patch(`${baseLocalApi}/messages/`, patchData, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('Token')}`,
-            },
-          })
-          .then((response) => {
-            updateMessage(messages, newMessageReceived.message, setMessages);
-          })
-          .catch((error) => {
-            console.error('Error:', error.message);
-          });
+        updateMessage(messages, newMessageReceived.message, setMessages);
+      }
+    });
+    const interval = setInterval(checkUserOnlineStatus, 5000);
+
+    socket.on('pingAck', (receiverId) => {
+      if (localStorage['_id'] !== receiverId && receiverId === receiver._id) {
+        setOnline(true);
       }
     });
 
     scrollToBottom();
+    return () => {
+      clearInterval(interval);
+    };
   });
 
   let scrollableRef = useRef(null);
@@ -215,6 +307,62 @@ function ResponsiveDrawer(props) {
     setMobileOpen(!mobileOpen);
   };
 
+  const updateMessagesAsSeen = () => {
+    const patchData = { roomId: room._id };
+
+    patchData.receiverId = room.isGroup
+      ? localStorage.getItem('_id')
+      : room.users[0] === localStorage.getItem('_id')
+      ? room.users[1]
+      : room.users[0];
+
+    axios
+      .patch(
+        `${baseLocalApi}/${room.isGroup ? 'messages-seen' : 'messages'}`,
+        patchData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('Token')}`,
+          },
+        }
+      )
+      .then((res) => {})
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const updateNotSeenCount = (currRooms, room) => {
+    const updatedRooms = JSON.parse(JSON.stringify(currRooms));
+    for (let i = 0; i < updatedRooms.length; i += 1) {
+      if (updatedRooms[i]._id === room._id) {
+        updatedRooms[i].notSeenCount = 0;
+        break;
+      }
+    }
+    return updatedRooms;
+  };
+
+  const typingHandler = () => {
+    if (!socketConnected) return;
+
+    socket.emit('typing', {
+      roomId: room._id,
+      userId: localStorage.getItem('_id'),
+    });
+
+    let lastTypingTime = new Date().getTime();
+    let timerLength = 3000;
+    setTimeout(() => {
+      const currTime = new Date().getTime();
+      const timeDiff = currTime - lastTypingTime;
+      if (timeDiff >= timerLength) {
+        socket.emit('stop typing', room._id);
+        setTyping(false);
+      }
+    }, timerLength);
+  };
+
   const sendMessage = (message) => {
     const { _id, name } = localStorage;
     const postData = {
@@ -225,7 +373,9 @@ function ResponsiveDrawer(props) {
       createdOn: new Date(),
       status: 'not_delivered',
     };
+    socket.emit('stop typing', room._id);
     setMessages([...messages, postData]);
+    updateMessagesAsSeen();
     axios
       .post(`${baseLocalApi}/messages/`, postData, {
         headers: {
@@ -234,15 +384,15 @@ function ResponsiveDrawer(props) {
       })
       .then((response) => {
         socket.emit('new message', { ...room, message: response.data.message });
-        console.log('Before :', messages);
         setMessages([...messages, response.data.message]);
-        console.log('After : ', messages);
-        // const updatedRooms = updateLastMessage(
-        //   rooms,
-        //   room,
-        //   response.data.message
-        // );
-        // setChatList({ rooms: updatedRooms });
+        const updatedRooms = updateLastMessage(
+          rooms,
+          room,
+          response.data.message
+        );
+        if (updatedRooms.length) {
+          setChatList({ rooms: updatedRooms });
+        }
       })
       .catch((error) => {
         console.error('Error:', error.message);
@@ -255,6 +405,10 @@ function ResponsiveDrawer(props) {
     }
     setCurrentRoom(room);
     currRoom.current = room;
+    const updatedRooms = updateNotSeenCount(rooms, currRoom.current);
+    if (updatedRooms.length) {
+      setChatList({ rooms: updatedRooms });
+    }
   };
 
   const addUserInGroup = (value, roomId) => {
@@ -286,7 +440,6 @@ function ResponsiveDrawer(props) {
         <ChatHeader />
       </AppBar>
       <Toolbar />
-
       <Toolbar />
       <ChatBar setRoom={changeRoom} />
     </div>
@@ -319,15 +472,8 @@ function ResponsiveDrawer(props) {
                 name={(receiver && receiver.name) || room.name}
                 receiver={receiver}
                 photoUrl={(receiver && receiver.photoUrl) || room.photoUrl}
+                isOnline={online}
               />
-              <div
-                style={{ color: 'red' }}
-                onClick={() => {
-                  console.log('Room id : ', room._id);
-                  console.log('Curr Room : ', currRoom.current);
-                }}>
-                Amir
-              </div>
             </div>
             <Typography
               variant='h6'
@@ -390,9 +536,9 @@ function ResponsiveDrawer(props) {
             }}>
             <Toolbar />
             <div style={{ paddingBottom: '70px' }} ref={scrollableRef}>
-              {messages.map((el) => (
+              {messages.map((el, index) => (
                 <MessageBox
-                  key={el._id}
+                  key={index}
                   message={el.message}
                   sender={el.senderName}
                   align={
@@ -404,9 +550,28 @@ function ResponsiveDrawer(props) {
                   status={el.status}
                 />
               ))}
+              {typing && (
+                <MessageBox
+                  message=''
+                  sender=''
+                  align='left'
+                  timestamp=''
+                  element={
+                    <Lottie
+                      width={70}
+                      options={defaultOptions}
+                      style={{ padding: '0', marginLeft: '-20px' }}
+                    />
+                  }
+                />
+              )}
             </div>
           </Box>
-          <ChatMessageBar onSend={sendMessage} drawerWidth={drawerWidth} />
+          <ChatMessageBar
+            typingHandler={typingHandler}
+            onSend={sendMessage}
+            drawerWidth={drawerWidth}
+          />
         </>
       )}
     </Box>
