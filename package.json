@@ -1,6 +1,7 @@
 {
-  "name": "react-chat-app",
+  "name": "com.chatapp.reactchatapp",
   "version": "0.1.0",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
@@ -55,6 +56,15 @@
     ]
   },
   "devDependencies": {
+    "cordova-android": "^12.0.0",
     "tailwindcss": "^3.3.2"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
   }
 }
