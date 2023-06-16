@@ -1,12 +1,16 @@
-export const SignUpAPI = 'http://localhost:5000/api/users';
+export const SignUpAPI =
+  'https://react-chat-app-backend-production.up.railway.app/api/users';
 
-export const SignInApi = 'http://localhost:5000/api/users/login';
+export const SignInApi =
+  'https://react-chat-app-backend-production.up.railway.app/api/users/login';
 
 export const CreateDataApi =
   'https://aerothonbackend-production.up.railway.app/api/fabrication';
-export const baseLocalApi = 'http://localhost:5000/api';
+export const baseLocalApi =
+  'https://react-chat-app-backend-production.up.railway.app/api';
 
-export const baseApi = 'http://localhost:5000';
+export const baseApi =
+  'https://react-chat-app-backend-production.up.railway.app';
 
 export const validateFormData = (formData) => {
   console.log(formData);

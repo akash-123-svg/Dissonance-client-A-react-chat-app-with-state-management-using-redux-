@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 /plugins/
 /platforms/
+www/
+react-chat-app/
