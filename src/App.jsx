@@ -9,7 +9,7 @@ const App = () => {
     <>
       {/* <Navbar /> */}
       <Routes>
-        <Route path='/' element={<Index />} />
+        <Route path='/' element={<ChatBox />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/dashboard/*' element={<Dashboard />} />

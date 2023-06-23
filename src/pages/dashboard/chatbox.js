@@ -218,6 +218,7 @@ function ResponsiveDrawer(props) {
         })
         .then((response) => {
           setMessages(response.data.messages);
+          console.log('called');
         })
         .catch((error) => {
           console.error('Error:', error.message);
@@ -235,6 +236,9 @@ function ResponsiveDrawer(props) {
 
   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {
+      console.log('Message received :', newMessageReceived);
+      console.log('Curr room : ', currRoom.current);
+      console.log('Messages :', messages);
       if (
         newMessageReceived &&
         currRoom.current &&
