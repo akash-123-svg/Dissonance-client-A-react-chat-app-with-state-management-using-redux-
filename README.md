@@ -6,6 +6,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npm i`
+
+Downloads the dependencies for this project.
+
+
 ### `npm start`
 
 Runs the app in the development mode.\
@@ -21,7 +26,7 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
+Builds the app for production to the `www` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.\
@@ -29,15 +34,29 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Cordova (Building Android / IOS app)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+You can build android / ios app by following  :
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### `npm i`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Downloads the dependencies for this project.
+
+### `npm run build`
+
+Builds the app for production to the `www` folder and Cordova needs www folder to be there.
+
+### Install an emulator or connect your mobile phone via cable and turn usb debugger on or you can use wireless debugging
+
+### Run `cordova run android`
+It builds and installs apk file in your mobile / emulator
+
+### For more follow this link 
+[https://cordova.apache.org/docs/en/11.x/guide/cli/]
+
+
+
 
 ## Learn More
 
