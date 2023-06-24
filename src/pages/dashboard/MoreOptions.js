@@ -24,19 +24,25 @@ const constOptions = [
 
 const ITEM_HEIGHT = 48;
 
-export default function LongMenu({ listOptions, addUser, isGroup }) {
+export default function LongMenu({
+  listOptions,
+  addUser,
+  isGroup,
+  showGroupNameInputBox = true,
+}) {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  let dontShotIndex = -1;
+  console.log('Is group : ', isGroup);
+  let dontShowIndex = -1;
   let options = constOptions;
   if (listOptions) {
     options = listOptions;
   } else if (!isGroup) {
-    dontShotIndex = 0;
+    dontShowIndex = 0;
   }
   const handleClose = (option) => {
     setAnchorEl(null);
@@ -76,7 +82,7 @@ export default function LongMenu({ listOptions, addUser, isGroup }) {
         }}>
         {options.map(
           (option, index) =>
-            dontShotIndex !== index && (
+            dontShowIndex !== index && (
               <MenuItem
                 key={option}
                 selected={index === 0}
@@ -93,6 +99,7 @@ export default function LongMenu({ listOptions, addUser, isGroup }) {
         setOpen={setModalOpen}
         showIconButton={false}
         isGroup={true}
+        showGroupNameInputBox={showGroupNameInputBox}
         addUser={addUser}
       />
     </div>

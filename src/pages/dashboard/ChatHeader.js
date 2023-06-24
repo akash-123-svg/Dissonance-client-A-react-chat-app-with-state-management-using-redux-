@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
-import { Check, DoneAll, Logout, ArrowBack, AddBox } from '@mui/icons-material';
-import Drawer from '@mui/material/Drawer';
+import { Box } from '@mui/material';
+import { Logout, AddBox } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import { baseLocalApi } from '../../utils/utility';
 import MoreOptions from './MoreOptions';

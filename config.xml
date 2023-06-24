@@ -1,13 +1,25 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.chatapp.www" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>reactChatApp</name>
-    <description>Sample Apache Cordova App</description>
-    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
-        Apache Cordova Team
+    <name>Whatsapp clone</name>
+    <description>Whatsapp clone app created by Amir</description>
+    <author email="amirkpatna@gmail.com" href="https://calm-llama-a0f095.netlify.app">
+        Amir Khan
     </author>
     <access origin="*" />
     <content src="index.html" />
     <allow-intent href="*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="http://*/*" />
+    <platform name="android">
+        <icon src="public/logow.png" density="ldpi" />
+        <icon src="public/logow.png" density="mdpi" />
+        <icon src="public/logow.png" density="hdpi" />
+        <icon src="public/logow.png" density="xhdpi" />
+        <icon src="public/logow.png" density="xxhdpi" />
+        <icon src="public/logow.png" density="xxxhdpi" />
+        <preference name="AndroidLaunchMode" value="singleTop" />
+        <preference name="AndroidWindowBackground" value="public/logow.png" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="public/logow.png" />
+        <preference name="AndroidSplashScreenWidth" value="1000dp" />
+    </platform>
 </widget>

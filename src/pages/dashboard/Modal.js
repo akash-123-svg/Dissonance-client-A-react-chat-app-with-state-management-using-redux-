@@ -6,9 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import { AddBox } from '@mui/icons-material';
 import SnackBar from '../../components/SnackBar';
 import { validateFormData } from '../../utils/utility';
 
@@ -19,6 +17,7 @@ export default function Modal({
   setOpen,
   showIconButton = true,
   isGroup = false,
+  showGroupNameInputBox = true,
 }) {
   // const [open, setOpen] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -34,7 +33,7 @@ export default function Modal({
     setOpen(false);
   };
   const handleSubmit = () => {
-    if (isGroup) {
+    if (isGroup && showGroupNameInputBox) {
       if (!roomName) {
         setSeverity('error');
         setSnackBarMessage('Please enter valid group name!');
@@ -90,7 +89,7 @@ export default function Modal({
           <DialogContentText>
             To start messaging, please enter mobile number here.
           </DialogContentText>
-          {isGroup && (
+          {isGroup && showGroupNameInputBox && (
             <TextField
               autoFocus
               margin='dense'

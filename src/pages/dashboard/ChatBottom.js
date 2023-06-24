@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TextField, IconButton } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import EmojiPicker from './EmojiPicker';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { EmojiEmotions, Close } from '@mui/icons-material';
 
 const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
@@ -26,6 +25,7 @@ const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
     if (message) {
       onSend(message);
       setMessage('');
+      setOpenEmojiPicker(false);
     }
   };
 

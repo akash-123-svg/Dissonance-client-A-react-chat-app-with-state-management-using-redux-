@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -31,7 +31,6 @@ export default function AlignItemsList({ setRoom }) {
       })
       .then((res) => {
         setChatList({ rooms: res.data.rooms });
-        console.log(data);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -46,7 +45,7 @@ export default function AlignItemsList({ setRoom }) {
                 className='hover:bg-sky-100 cursor-pointer transition duration-300'>
                 <ListItemAvatar>
                   <Avatar
-                    alt={!el.isGroup ? el.receiverName : el.name}
+                    alt={el.isGroup ? el.name : el.receiverName}
                     src={el.photoUrl || '/static/images/avatar/1.jpg'}
                     sx={{ backgroundColor: 'orange' }}
                   />

@@ -1,13 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import {
-  AccessTime,
-  Check,
-  DoneAll,
-  VisibilityOff,
-  ScheduleSendTwoTone,
-  ScheduleTwoTone,
-} from '@mui/icons-material';
+import { Check, DoneAll, ScheduleTwoTone } from '@mui/icons-material';
 
 const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
   const alignStyle = {
