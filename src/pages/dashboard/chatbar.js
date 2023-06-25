@@ -33,7 +33,7 @@ export default function AlignItemsList({ setRoom }) {
         setChatList({ rooms: res.data.rooms });
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [setChatList]);
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
       {data.map(

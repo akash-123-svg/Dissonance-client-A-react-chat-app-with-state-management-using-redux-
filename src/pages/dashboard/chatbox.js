@@ -24,6 +24,7 @@ import { bindActionCreators } from 'redux';
 import { actionCreators } from '../../state/index';
 import Lottie from 'react-lottie';
 import animationData from '../../animations/typing.json';
+import OneSignal from 'react-onesignal';
 
 const drawerWidth = 340;
 
@@ -36,6 +37,13 @@ const defaultOptions = {
   rendererSettings: {
     preserveAspectRatio: 'xMidYMid slice',
   },
+};
+
+const onHandleTag = (tag) => {
+  console.log('Tagging');
+  OneSignal.sendTag('Amir', tag).then(() => {
+    console.log('Tagged');
+  });
 };
 
 const updateLastMessage = (currRooms, room, message, cnt) => {
@@ -117,6 +125,7 @@ function ResponsiveDrawer(props) {
   const [typing, setTyping] = useState(false);
   const [online, setOnline] = useState(false);
   const navigate = useNavigate();
+
   const room = useSelector((state) => {
     return state.roomReducer;
   });
@@ -161,6 +170,8 @@ function ResponsiveDrawer(props) {
     setTyping(() => {
       return false;
     });
+
+    // OneSignal.init({ appId: '5655f3bd-13db-4bce-90e0-5c8b5df3671e' });
 
     socket = io(baseApi, {
       auth: {
@@ -243,7 +254,7 @@ function ResponsiveDrawer(props) {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [room]); // Empty dependency array ensures the effect runs only once
+  }, [navigate, room]); // Empty dependency array ensures the effect runs only once
 
   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {
@@ -300,7 +311,6 @@ function ResponsiveDrawer(props) {
     });
 
     socket.on('message received ack', (newMessageReceived) => {
-      console.log('Received ack');
       if (
         newMessageReceived &&
         currRoom.current &&
@@ -342,7 +352,6 @@ function ResponsiveDrawer(props) {
 
   const updateMessagesAsSeen = () => {
     const room = currRoom.current;
-    console.log('Room :', room);
     const patchData = { roomId: room._id };
 
     patchData.receiverId = room.isGroup

@@ -36,7 +36,6 @@ export default function LongMenu({
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  console.log('Is group : ', isGroup);
   let dontShowIndex = -1;
   let options = constOptions;
   if (listOptions) {
