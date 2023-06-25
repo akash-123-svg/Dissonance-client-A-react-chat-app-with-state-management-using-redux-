@@ -31,13 +31,13 @@
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
-    "dotenv": "^10.0.0",
     "dotenv-expand": "^5.1.0",
     "emoji-mart": "^5.5.2",
     "eslint": "^8.3.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-webpack-plugin": "^3.1.1",
     "file-loader": "^6.2.0",
+    "fs": "0.0.1-security",
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",
@@ -47,6 +47,8 @@
     "jwt-decode": "^3.1.2",
     "mini-css-extract-plugin": "^2.4.5",
     "moment-timezone": "^0.5.43",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
     "postcss": "^8.4.4",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-loader": "^6.2.1",
@@ -58,6 +60,7 @@
     "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",
     "react-lottie": "^1.2.3",
+    "react-onesignal": "^2.0.4",
     "react-redux": "^8.0.5",
     "react-refresh": "^0.11.0",
     "react-router-dom": "^6.11.1",
@@ -80,7 +83,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "android-build": "chmod +x scripts/build-android.sh && ./scripts/build-android.sh"
   },
   "eslintConfig": {
     "extends": [
@@ -103,6 +107,7 @@
   "devDependencies": {
     "cordova-android": "^12.0.0",
     "cordova-plugin-websocket": "^0.12.2",
+    "dotenv": "^10.0.0",
     "tailwindcss": "^3.3.2"
   },
   "jest": {

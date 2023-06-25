@@ -25,7 +25,7 @@ const SignIn = () => {
     if (localStorage.getItem('Token')) {
       navigate('/');
     }
-  }, []);
+  }, [navigate]);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
