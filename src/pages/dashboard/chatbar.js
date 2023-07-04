@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -12,9 +12,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators } from '../../state/index';
 import CircleNumber from '../../components/CircleNumber';
+import CommonModal from '../../components/CommonModal';
 
-export default function AlignItemsList({ setRoom }) {
+const AlignItemsList = ({ setRoom }) => {
   // const [data, setData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [name, setName] = useState();
   const dispatch = useDispatch();
   const { setChatList } = bindActionCreators(actionCreators, dispatch);
   const data = [
@@ -33,9 +37,28 @@ export default function AlignItemsList({ setRoom }) {
         setChatList({ rooms: res.data.rooms });
       })
       .catch((err) => console.error(err));
-  }, [setChatList]);
+  }, []);
+
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      <CommonModal
+        open={open}
+        setOpen={setOpen}
+        previewImage={true}
+        element={
+          <Avatar
+            alt={name}
+            src={photoUrl}
+            sx={{
+              width: 315,
+              height: 315,
+              borderRadius: '50%',
+              backgroundColor: 'orange',
+              fontSize: '4rem',
+            }}
+          />
+        }
+      />
       {data.map(
         (el, index) =>
           el && (
@@ -48,6 +71,11 @@ export default function AlignItemsList({ setRoom }) {
                     alt={el.isGroup ? el.name : el.receiverName}
                     src={el.photoUrl || '/static/images/avatar/1.jpg'}
                     sx={{ backgroundColor: 'orange' }}
+                    onClick={() => {
+                      setPhotoUrl(el.photoUrl || '/static/images/avatar/1.jpg');
+                      setName(el.isGroup ? el.name : el.receiverName);
+                      setOpen(true);
+                    }}
                   />
                 </ListItemAvatar>
                 <ListItemText
@@ -78,4 +106,6 @@ export default function AlignItemsList({ setRoom }) {
       )}
     </List>
   );
-}
+};
+
+export default AlignItemsList;

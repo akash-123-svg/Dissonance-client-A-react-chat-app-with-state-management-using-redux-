@@ -4,12 +4,14 @@ import { SignUpAPI, validateFormData } from '../utils/utility';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import SnackBar from '../components/SnackBar';
+
 const SignUp = () => {
   const navigate = useNavigate();
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [severity, setSeverity] = useState('success');
   const [snackBarMessage, setSnackBarMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [uploadInProgress, setUploadInProgress] = useState(false);
   const [formData, setFormData] = useState({});
   const changeHandler = (event) => {
     const { name, value } = event.target;
@@ -61,7 +63,7 @@ const SignUp = () => {
               <div className='absolute inset-0 z-10 bg-gray-900 opacity-40'></div>
               <img
                 className='absolute inset-0 z-0 object-cover w-full h-full ml-auto'
-                src='https://images.pexels.com/photos/7321/sea-water-ocean-horizon.jpg?auto=compress&cs=tinysrgb&h=750&w=1260'
+                src={`https://images.pexels.com/photos/7321/sea-water-ocean-horizon.jpg?auto=compress&cs=tinysrgb&h=750&w=1260`}
                 alt='img'
               />
               <div className='top-0 z-10 max-w-xl mx-auto mb-12 text-center '>
@@ -149,7 +151,6 @@ const SignUp = () => {
                         <path d='M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z' />
                       </svg>
                     </div>
-
                     <div className='mb-4 text-right '>
                       <a
                         href='1'
@@ -160,6 +161,7 @@ const SignUp = () => {
 
                     <button
                       className='w-full py-4 mb-4 font-semibold text-gray-200 bg-green-600 rounded-lg px-7 dark:text-gray-300 dark:bg-green-600 hover:text-blue-200 '
+                      disabled={uploadInProgress}
                       type='submit'>
                       REGISTER
                     </button>

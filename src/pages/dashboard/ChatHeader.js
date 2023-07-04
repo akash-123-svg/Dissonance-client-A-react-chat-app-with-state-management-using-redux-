@@ -14,17 +14,17 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators } from '../../state/index';
-const ChatHeader = () => {
+import UserProfile from '../../components/UserProfile';
+import CommonModal from '../../components/CommonModal';
+const ChatHeader = ({ setRoom }) => {
   const dispatch = useDispatch();
-  const { setChatList, setCurrentRoom } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { setChatList } = bindActionCreators(actionCreators, dispatch);
   const rooms = useSelector((state) => {
     return state.chatListReducer.rooms;
   });
   const options = ['Group chat'];
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [severity, setSeverity] = useState('success');
   const [snackBarMessage, setSnackBarMessage] = useState('');
@@ -43,7 +43,6 @@ const ChatHeader = () => {
         },
       })
       .then((response) => {
-        console.log('Response:', response.data.room);
         let found = false;
         for (let i = 0; i < rooms.length; i += 1) {
           if (response.data.room._id === rooms[i]._id) {
@@ -53,7 +52,7 @@ const ChatHeader = () => {
         }
         if (!found) {
           setChatList({ rooms: [response.data.room, ...rooms] });
-          setCurrentRoom(response.data.room);
+          setRoom({ ...response.data.room });
         } else {
           setSeverity('warning');
           setSnackBarMessage(`This chat is already open`);
@@ -70,6 +69,11 @@ const ChatHeader = () => {
 
   return (
     <Box display='flex'>
+      <CommonModal
+        open={openModal}
+        setOpen={setOpenModal}
+        element={<UserProfile setOpen={setOpenModal} />}
+      />
       <List
         sx={{
           width: '100%',
@@ -87,8 +91,16 @@ const ChatHeader = () => {
               color: 'black',
               marginLeft: '5px',
             }}
-            onClick={() => {}}>
-            <Avatar />
+            onClick={() => {
+              setOpenModal(true);
+            }}>
+            <Avatar
+              alt={localStorage.getItem('name')}
+              src={
+                localStorage.getItem('photoUrl') ||
+                '/static/images/avatar/1.jpg'
+              }
+            />
           </IconButton>
         </ListItem>
       </List>
@@ -97,21 +109,13 @@ const ChatHeader = () => {
           width: '100%',
           maxWidth: 360,
           bgcolor: 'background.paper',
-          //   ml: {
-          //     sm: `calc(100% - 200px)`,
-          //     xs: `calc(100% - 200px)`,
-          //   },
         }}>
         <ListItem>
           <AddUserModal
             addUser={addUser}
             open={open}
             setOpen={setOpen}
-            element={
-              <Avatar>
-                <AddBox />
-              </Avatar>
-            }
+            element={<AddBox />}
           />
           <MoreOptions listOptions={options} addUser={addUser} />
           <SnackBar

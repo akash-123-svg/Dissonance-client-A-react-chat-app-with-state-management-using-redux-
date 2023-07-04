@@ -17,15 +17,6 @@ export const setSession = (props) => {
   };
 };
 
-export const setToggler = (props) => {
-  return (dispatch) => {
-    dispatch({
-      type: 'SET_TOGGLER',
-      ...props,
-    });
-  };
-};
-
 export const setCurrentRoom = (props) => {
   return (dispatch) => {
     dispatch({

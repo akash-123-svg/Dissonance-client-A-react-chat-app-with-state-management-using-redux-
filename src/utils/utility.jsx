@@ -9,7 +9,6 @@ export const SignUpAPI = `${api_url}/api/users`;
 export const baseApi = api_url;
 
 export const validateFormData = (formData) => {
-  console.log(formData);
   const allowedStartDigit = ['9', '8', '7', '6'];
   if (!(formData.mobile.length === 10 || formData.mobile.length === 13)) {
     return false;

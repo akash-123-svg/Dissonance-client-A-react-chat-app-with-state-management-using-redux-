@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import ChatBox from './pages/dashboard/chatbox';
+import './App.css';
 const App = () => {
   return (
     <>

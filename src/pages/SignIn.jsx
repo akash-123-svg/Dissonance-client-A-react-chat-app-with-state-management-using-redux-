@@ -15,7 +15,6 @@ const SignIn = () => {
   const navigate = useNavigate();
   const changeHandler = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -25,7 +24,7 @@ const SignIn = () => {
     if (localStorage.getItem('Token')) {
       navigate('/');
     }
-  }, [navigate]);
+  }, []);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -48,7 +47,21 @@ const SignIn = () => {
         localStorage.setItem('name', decoded.name);
         localStorage.setItem('_id', decoded._id);
         localStorage.setItem('mobile', decoded.mobile);
-        console.log(decoded);
+        localStorage.setItem('photoUrl', decoded.photoUrl);
+        // Replace 'YOUR_TAG_KEY' and 'YOUR_TAG_VALUE' with the desired tag key-value pair
+        const tagKey = '_id';
+        const tagValue = decoded.mobile;
+        if(window.cordova) {
+          window.plugins.OneSignal.sendTags(
+            { [tagKey]: tagValue },
+            (tags) => {
+              console.log('Tags added successfully ', tags);
+            },
+            (err) => {
+              console.log('Error adding tags');
+            }
+          );
+        }
         navigate('/chatbox');
       })
       .catch((error) => {

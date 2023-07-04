@@ -39,13 +39,6 @@ const defaultOptions = {
   },
 };
 
-const onHandleTag = (tag) => {
-  console.log('Tagging');
-  OneSignal.sendTag('Amir', tag).then(() => {
-    console.log('Tagged');
-  });
-};
-
 const updateLastMessage = (currRooms, room, message, cnt) => {
   const updatedRooms = JSON.parse(JSON.stringify(currRooms));
   let i = 0;
@@ -111,7 +104,7 @@ const updateMessage = (newMessages, message, setMessage) => {
   }
 };
 
-function ResponsiveDrawer(props) {
+const ResponsiveDrawer = (props) => {
   const dispatch = useDispatch();
   const { setCurrentRoom, setChatList } = bindActionCreators(
     actionCreators,
@@ -220,8 +213,7 @@ function ResponsiveDrawer(props) {
             },
           })
           .then((userRes) => {
-            setReceiver(userRes.data.user);
-            // console.log(userRes);
+            setReceiver(() => userRes.data.user);
           })
           .catch((err) => {
             console.error(err);
@@ -254,7 +246,7 @@ function ResponsiveDrawer(props) {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [navigate, room]); // Empty dependency array ensures the effect runs only once
+  }, [room]); // Empty dependency array ensures the effect runs only once
 
   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {
@@ -415,7 +407,7 @@ function ResponsiveDrawer(props) {
     });
 
     let lastTypingTime = new Date().getTime();
-    let timerLength = 1000;
+    let timerLength = 3000;
     setTimeout(() => {
       const currTime = new Date().getTime();
       const timeDiff = currTime - lastTypingTime;
@@ -455,6 +447,38 @@ function ResponsiveDrawer(props) {
         if (updatedRooms.length) {
           setChatList({ rooms: updatedRooms });
         }
+      })
+      .catch((error) => {
+        console.error('Error:', error.message);
+      });
+      const pushNotificationData = {
+        app_id: process.env.REACT_APP_ONE_SIGNAL,
+        contents: {
+          en: message // Customize the message content as per your requirements
+        },
+        buttons: [
+          { id: "reply", text: "Reply", icon: "logow" }
+        ],
+        headings:{
+            en : `New message from ${localStorage.getItem('name')}`
+        },
+        filters: [
+          { field: "tag", key: "_id", relation: "=", value: receiver.mobile }
+        ],
+        small_icon: "notification_icon",
+        large_icon: "notification_icon",
+        android_sound: "buzzer",
+        android_channel_id: process.env.REACT_APP_ONESIGNAL_CHANNEL_ID
+      }
+      axios
+      .post(`https://onesignal.com/api/v1/notifications`, pushNotificationData, {
+        headers: {
+          "Authorization": `Basic ${process.env.REACT_APP_ONESIGNAL_REST_KEY}`,
+          "Content-Type": 'application/json'
+        },
+      })
+      .then((response) => {
+        
       })
       .catch((error) => {
         console.error('Error:', error.message);
@@ -503,7 +527,7 @@ function ResponsiveDrawer(props) {
             sm: `calc(100% - ${drawerWidth}px)`,
           },
         }}>
-        <ChatHeader />
+        <ChatHeader setRoom={changeRoom} />
       </AppBar>
       <Toolbar />
       <Toolbar />
@@ -647,7 +671,7 @@ function ResponsiveDrawer(props) {
       )}
     </Box>
   );
-}
+};
 
 ResponsiveDrawer.propTypes = {
   /**
