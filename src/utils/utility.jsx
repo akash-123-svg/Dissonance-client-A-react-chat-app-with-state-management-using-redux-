@@ -1,14 +1,14 @@
-const api_url =
+const apiUrl =
   process.env.NODE_ENV === 'development'
-    ? process.env.REACT_APP_LOCAL_API_URL || 'http://localhost:5000'
-    : process.env.REACT_APP_API_URL;
+    ? process.env.REACT_APP_LOCAL_apiUrl || 'http://localhost:5000'
+    : process.env.REACT_APP_apiUrl;
 
-export const SignInApi = `${api_url}/api/users/login`;
-export const baseLocalApi = `${api_url}/api`;
-export const SignUpAPI = `${api_url}/api/users`;
-export const baseApi = api_url;
+export const SignInApi = `${apiUrl}/api/users/login`;
+export const baseLocalApi = `${apiUrl}/api`;
+export const SignUpAPI = `${apiUrl}/api/users`;
+export const baseApi = apiUrl;
 
-export const validateFormData = (formData) => {
+export const validateFormData = formData => {
   const allowedStartDigit = ['9', '8', '7', '6'];
   if (!(formData.mobile.length === 10 || formData.mobile.length === 13)) {
     return false;

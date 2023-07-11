@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -9,22 +10,21 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import ChatBar from './chatbar';
-import ChatMessageBar from './ChatBottom';
-import MessageBox from './MessageBox';
-import ChatHeader from './ChatHeader';
 import { ArrowBack } from '@mui/icons-material';
-import MenuListComposition from './MoreOptions';
-import AvatarWithLastSeen from './AvatarWithLastSeen';
-import { baseLocalApi, baseApi } from '../../utils/utility';
 import moment from 'moment-timezone';
 import io from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actionCreators } from '../../state/index';
 import Lottie from 'react-lottie';
+import ChatBar from './chatbar';
+import ChatMessageBar from './ChatBottom';
+import MessageBox from './MessageBox';
+import ChatHeader from './ChatHeader';
+import MenuListComposition from './MoreOptions';
+import AvatarWithLastSeen from './AvatarWithLastSeen';
+import { baseLocalApi, baseApi } from '../../utils/utility';
+import { actionCreators } from '../../state/index';
 import animationData from '../../animations/typing.json';
-import OneSignal from 'react-onesignal';
 
 const drawerWidth = 340;
 
@@ -35,8 +35,8 @@ const defaultOptions = {
   autoplay: true,
   animationData,
   rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice',
-  },
+    preserveAspectRatio: 'xMidYMid slice'
+  }
 };
 
 const updateLastMessage = (currRooms, room, message, cnt) => {
@@ -46,9 +46,7 @@ const updateLastMessage = (currRooms, room, message, cnt) => {
     if (updatedRooms[i]._id === room._id) {
       const newMessage = { ...message };
       newMessage.message =
-        newMessage.message.length > 30
-          ? newMessage.message.substr(0, 35) + '...'
-          : newMessage.message;
+        newMessage.message.length > 30 ? `${newMessage.message.substr(0, 35)}...` : newMessage.message;
       updatedRooms[i].lastMessage = newMessage;
       if (cnt) {
         if (!updatedRooms[i].notSeenCount) updatedRooms[i].notSeenCount = 0;
@@ -66,7 +64,7 @@ const updateLastMessage = (currRooms, room, message, cnt) => {
       admins: room.admins,
       users: room.users,
       lastMessage: message,
-      notSeenCount: 1,
+      notSeenCount: 1
     };
     updatedRooms.splice(0, 0, newRoom);
   }
@@ -75,20 +73,12 @@ const updateLastMessage = (currRooms, room, message, cnt) => {
       if (!b.lastMessage.createdOn) {
         return moment(a.createdOn).isAfter(moment(b.createdOn)) ? -1 : 1;
       }
-      return moment(a.createdOn).isAfter(moment(b.lastMessage.createdOn))
-        ? -1
-        : 1;
+      return moment(a.createdOn).isAfter(moment(b.lastMessage.createdOn)) ? -1 : 1;
     }
     if (!b.lastMessage.createdOn) {
-      return moment(a.createdOn).isAfter(moment(b.lastMessage.createdOn))
-        ? -1
-        : 1;
+      return moment(a.createdOn).isAfter(moment(b.lastMessage.createdOn)) ? -1 : 1;
     }
-    return moment(a.lastMessage.createdOn).isAfter(
-      moment(b.lastMessage.createdOn)
-    )
-      ? -1
-      : 1;
+    return moment(a.lastMessage.createdOn).isAfter(moment(b.lastMessage.createdOn)) ? -1 : 1;
   });
   return updatedRooms;
 };
@@ -104,12 +94,9 @@ const updateMessage = (newMessages, message, setMessage) => {
   }
 };
 
-const ResponsiveDrawer = (props) => {
+const ResponsiveDrawer = props => {
   const dispatch = useDispatch();
-  const { setCurrentRoom, setChatList } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { setCurrentRoom, setChatList } = bindActionCreators(actionCreators, dispatch);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [receiver, setReceiver] = useState({});
   const [messages, setMessages] = useState([]);
@@ -118,19 +105,40 @@ const ResponsiveDrawer = (props) => {
   const [typing, setTyping] = useState(false);
   const [online, setOnline] = useState(false);
   const navigate = useNavigate();
+  const scrollableRef = useRef(null);
+  const scrollToBottom = () => {
+    if (scrollableRef && scrollableRef.current) {
+      scrollableRef.current.scrollIntoView({
+        block: 'end'
+      });
+    }
+  };
 
-  const room = useSelector((state) => {
+  const room = useSelector(state => {
     return state.roomReducer;
   });
   const currRoom = useRef(
-    useSelector((state) => {
+    useSelector(state => {
       return state.roomReducer;
     })
   );
 
+  const updateOneMessagesAsSeen = messageId => {
+    const patchData = { receiverId: localStorage.getItem('_id') };
+    axios
+      .patch(`${baseLocalApi}/${currRoom.current.isGroup ? 'message-seen' : 'messages'}/${messageId}`, patchData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('Token')}`
+        }
+      })
+      .then(() => {})
+      .catch(err => {
+        console.error(err);
+      });
+  };
   const rooms = JSON.parse(
     JSON.stringify(
-      useSelector((state) => {
+      useSelector(state => {
         return state.chatListReducer.rooms;
       })
     )
@@ -141,7 +149,7 @@ const ResponsiveDrawer = (props) => {
     if (receiver && receiver._id) {
       socket.emit('pingForOnlineStatus', {
         senderId: localStorage.getItem('_id'),
-        receiverId: receiver._id,
+        receiverId: receiver._id
       });
     }
   };
@@ -154,6 +162,28 @@ const ResponsiveDrawer = (props) => {
     setMessages(() => currMessages);
   };
 
+  const updateMessagesAsSeen = () => {
+    // eslint-disable-next-line no-shadow
+    const room = currRoom.current;
+    const patchData = { roomId: room._id };
+
+    // eslint-disable-next-line no-nested-ternary
+    patchData.receiverId = room.isGroup
+      ? localStorage.getItem('_id')
+      : room.users[0] === localStorage.getItem('_id')
+      ? room.users[1]
+      : room.users[0];
+    axios
+      .patch(`${baseLocalApi}/${room.isGroup ? 'message-seen' : 'messages'}`, patchData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('Token')}`
+        }
+      })
+      .then(() => {})
+      .catch(err => {
+        console.error(err);
+      });
+  };
   useEffect(() => {
     if (!localStorage.getItem('Token')) {
       navigate('/signin');
@@ -168,17 +198,14 @@ const ResponsiveDrawer = (props) => {
 
     socket = io(baseApi, {
       auth: {
-        _id: localStorage.getItem('_id'),
-      },
+        _id: localStorage.getItem('_id')
+      }
     });
     socket.emit('setup', { _id: localStorage.getItem('_id') });
     socket.on('connected', () => setSocketConnected(true));
 
     socket.on('typing', ({ userId, roomId }) => {
-      if (
-        userId !== localStorage.getItem('_id') &&
-        roomId === currRoom.current._id
-      ) {
+      if (userId !== localStorage.getItem('_id') && roomId === currRoom.current._id) {
         setTyping(() => true);
       }
     });
@@ -188,6 +215,7 @@ const ResponsiveDrawer = (props) => {
     socket.on('disconnect', () => {
       console.log('Disconnected !!');
     });
+
     const handleResize = () => {
       const newWidth = window.innerWidth;
       setWindowWidth(newWidth);
@@ -202,20 +230,17 @@ const ResponsiveDrawer = (props) => {
     if (room._id) {
       setMobileOpen(false);
       if (!room.isGroup) {
-        const receiverId =
-          room.users[0] === localStorage.getItem('_id')
-            ? room.users[1]
-            : room.users[0];
+        const receiverId = room.users[0] === localStorage.getItem('_id') ? room.users[1] : room.users[0];
         axios
           .get(`${baseLocalApi}/users/${receiverId}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('Token')}`,
-            },
+              Authorization: `Bearer ${localStorage.getItem('Token')}`
+            }
           })
-          .then((userRes) => {
+          .then(userRes => {
             setReceiver(() => userRes.data.user);
           })
-          .catch((err) => {
+          .catch(err => {
             console.error(err);
           });
       }
@@ -223,13 +248,13 @@ const ResponsiveDrawer = (props) => {
       axios
         .get(`${baseLocalApi}/messages/${room._id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('Token')}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem('Token')}`
+          }
         })
-        .then((response) => {
+        .then(response => {
           setMessages(response.data.messages);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error:', error.message);
         });
       if (currRoom.current.notSeenCount) {
@@ -249,36 +274,27 @@ const ResponsiveDrawer = (props) => {
   }, [room]); // Empty dependency array ensures the effect runs only once
 
   useEffect(() => {
-    socket.on('message received', (newMessageReceived) => {
+    socket.on('message received', newMessageReceived => {
       if (
         newMessageReceived &&
         currRoom.current &&
         currRoom.current._id &&
         newMessageReceived._id === currRoom.current._id
       ) {
-        setMessages((prevMessages) => {
+        setMessages(prevMessages => {
           return [...prevMessages, newMessageReceived.message];
         });
-        const updatedRooms = updateLastMessage(
-          rooms,
-          currRoom.current,
-          newMessageReceived.message
-        );
+        const updatedRooms = updateLastMessage(rooms, currRoom.current, newMessageReceived.message);
         if (updatedRooms.length) {
           setChatList({ rooms: updatedRooms });
         }
         updateOneMessagesAsSeen(newMessageReceived.message._id);
         socket.emit('message delivered ack', {
           userId: localStorage.getItem('_id'),
-          newMessageReceived,
+          newMessageReceived
         });
       } else {
-        const updatedRooms = updateLastMessage(
-          rooms,
-          newMessageReceived,
-          newMessageReceived.message,
-          1
-        );
+        const updatedRooms = updateLastMessage(rooms, newMessageReceived, newMessageReceived.message, 1);
         if (updatedRooms.length) {
           setChatList({ rooms: updatedRooms });
         }
@@ -292,17 +308,17 @@ const ResponsiveDrawer = (props) => {
       }
     });
 
-    socket.on('pingAck', (obj) => {
+    socket.on('pingAck', obj => {
       if (receiver && obj && obj.receiverId === receiver._id) {
         setOnline(true);
       }
     });
 
-    socket.on('updateUnreadMessagesAsSeen', ({ roomId }) => {
+    socket.on('updateUnreadMessagesAsSeen', () => {
       updateAllMessagesAsSeen();
     });
 
-    socket.on('message received ack', (newMessageReceived) => {
+    socket.on('message received ack', newMessageReceived => {
       if (
         newMessageReceived &&
         currRoom.current &&
@@ -324,67 +340,12 @@ const ResponsiveDrawer = (props) => {
     };
   });
 
-  let scrollableRef = useRef(null);
-
-  const scrollToBottom = () => {
-    if (scrollableRef && scrollableRef.current) {
-      scrollableRef.current.scrollIntoView({
-        block: 'end',
-      });
-    }
-  };
-
   const windowProp = props.window;
 
   const handleDrawerToggle = () => {
     currRoom.current = {};
     setMessages([]);
     setMobileOpen(!mobileOpen);
-  };
-
-  const updateMessagesAsSeen = () => {
-    const room = currRoom.current;
-    const patchData = { roomId: room._id };
-
-    patchData.receiverId = room.isGroup
-      ? localStorage.getItem('_id')
-      : room.users[0] === localStorage.getItem('_id')
-      ? room.users[1]
-      : room.users[0];
-    axios
-      .patch(
-        `${baseLocalApi}/${room.isGroup ? 'message-seen' : 'messages'}`,
-        patchData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('Token')}`,
-          },
-        }
-      )
-      .then((res) => {})
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
-  const updateOneMessagesAsSeen = (messageId) => {
-    const patchData = { receiverId: localStorage.getItem('_id') };
-    axios
-      .patch(
-        `${baseLocalApi}/${
-          currRoom.current.isGroup ? 'message-seen' : 'messages'
-        }/${messageId}`,
-        patchData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('Token')}`,
-          },
-        }
-      )
-      .then((res) => {})
-      .catch((err) => {
-        console.error(err);
-      });
   };
 
   const updateNotSeenCount = (currRooms, room) => {
@@ -403,11 +364,11 @@ const ResponsiveDrawer = (props) => {
 
     socket.emit('typing', {
       roomId: room._id,
-      userId: localStorage.getItem('_id'),
+      userId: localStorage.getItem('_id')
     });
 
-    let lastTypingTime = new Date().getTime();
-    let timerLength = 3000;
+    const lastTypingTime = new Date().getTime();
+    const timerLength = 3000;
     setTimeout(() => {
       const currTime = new Date().getTime();
       const timeDiff = currTime - lastTypingTime;
@@ -418,7 +379,7 @@ const ResponsiveDrawer = (props) => {
     }, timerLength);
   };
 
-  const sendMessage = (message) => {
+  const sendMessage = message => {
     const { _id, name } = localStorage;
     const postData = {
       message,
@@ -426,66 +387,56 @@ const ResponsiveDrawer = (props) => {
       senderId: _id,
       roomId: room._id,
       createdOn: new Date(),
-      status: 'not_delivered',
+      status: 'not_delivered'
     };
     socket.emit('stop typing', room._id);
     setMessages([...messages, postData]);
     axios
       .post(`${baseLocalApi}/messages/`, postData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('Token')}`,
-        },
+          Authorization: `Bearer ${localStorage.getItem('Token')}`
+        }
       })
-      .then((response) => {
+      .then(response => {
         socket.emit('new message', { ...room, message: response.data.message });
         setMessages([...messages, response.data.message]);
-        const updatedRooms = updateLastMessage(
-          rooms,
-          room,
-          response.data.message
-        );
+        const updatedRooms = updateLastMessage(rooms, room, response.data.message);
         if (updatedRooms.length) {
           setChatList({ rooms: updatedRooms });
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error:', error.message);
       });
-      const pushNotificationData = {
-        app_id: process.env.REACT_APP_ONE_SIGNAL,
-        contents: {
-          en: message // Customize the message content as per your requirements
-        },
-        buttons: [
-          { id: "reply", text: "Reply", icon: "logow" }
-        ],
-        headings:{
-            en : `New message from ${localStorage.getItem('name')}`
-        },
-        filters: [
-          { field: "tag", key: "_id", relation: "=", value: receiver.mobile }
-        ],
-        small_icon: "notification_icon",
-        large_icon: "notification_icon",
-        android_sound: "buzzer",
-        android_channel_id: process.env.REACT_APP_ONESIGNAL_CHANNEL_ID
-      }
-      axios
+    const pushNotificationData = {
+      app_id: process.env.REACT_APP_ONE_SIGNAL,
+      contents: {
+        en: message // Customize the message content as per your requirements
+      },
+      buttons: [{ id: 'reply', text: 'Reply', icon: 'logow' }],
+      headings: {
+        en: `New message from ${localStorage.getItem('name')}`
+      },
+      filters: [{ field: 'tag', key: '_id', relation: '=', value: receiver.mobile }],
+      small_icon: 'notification_icon',
+      large_icon: 'notification_icon',
+      android_sound: 'buzzer',
+      android_channel_id: process.env.REACT_APP_ONESIGNAL_CHANNEL_ID
+    };
+    axios
       .post(`https://onesignal.com/api/v1/notifications`, pushNotificationData, {
         headers: {
-          "Authorization": `Basic ${process.env.REACT_APP_ONESIGNAL_REST_KEY}`,
-          "Content-Type": 'application/json'
-        },
+          Authorization: `Basic ${process.env.REACT_APP_ONESIGNAL_REST_KEY}`,
+          'Content-Type': 'application/json'
+        }
       })
-      .then((response) => {
-        
-      })
-      .catch((error) => {
+      .then(() => {})
+      .catch(error => {
         console.error('Error:', error.message);
       });
   };
 
-  const changeRoom = (room) => {
+  const changeRoom = room => {
     if (windowWidth <= 600) {
       setMobileOpen(false);
     }
@@ -497,22 +448,18 @@ const ResponsiveDrawer = (props) => {
     }
   };
 
-  const addUserInGroup = (value) => {
+  const addUserInGroup = value => {
     const postData = { userIdToAdd: value };
     axios
-      .post(
-        `${baseLocalApi}/rooms/${currRoom.current._id}/add-user`,
-        postData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('Token')}`,
-          },
+      .post(`${baseLocalApi}/rooms/${currRoom.current._id}/add-user`, postData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('Token')}`
         }
-      )
-      .then((response) => {
+      })
+      .then(() => {
         // console.log('Response:', response.data);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error:', error.message);
       });
   };
@@ -520,12 +467,12 @@ const ResponsiveDrawer = (props) => {
   const drawer = (
     <div>
       <AppBar
-        position='fixed'
+        position="fixed"
         sx={{
           width: { sm: `${drawerWidth}px`, xs: `100%` },
           mr: {
-            sm: `calc(100% - ${drawerWidth}px)`,
-          },
+            sm: `calc(100% - ${drawerWidth}px)`
+          }
         }}>
         <ChatHeader setRoom={changeRoom} />
       </AppBar>
@@ -535,46 +482,36 @@ const ResponsiveDrawer = (props) => {
     </div>
   );
 
-  const container =
-    windowProp !== undefined ? () => windowProp().document.body : undefined;
+  const container = windowProp !== undefined ? () => windowProp().document.body : undefined;
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       {currRoom.current._id && (
         <AppBar
-          position='fixed'
+          position="fixed"
           sx={{
             width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
+            ml: { sm: `${drawerWidth}px` }
           }}>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             <div style={{ display: 'flex' }}>
               <IconButton
-                color='inherit'
-                aria-label='open drawer'
-                edge='start'
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
                 onClick={handleDrawerToggle}
                 sx={{ mr: 2, visibility: { sm: 'hidden' } }}>
                 <ArrowBack />
               </IconButton>
               <AvatarWithLastSeen
-                name={
-                  currRoom.current.isGroup
-                    ? currRoom.current.name
-                    : (receiver && receiver.name) || room.name
-                }
+                name={currRoom.current.isGroup ? currRoom.current.name : (receiver && receiver.name) || room.name}
                 receiver={receiver}
                 photoUrl={(receiver && receiver.photoUrl) || room.photoUrl}
                 isOnline={online}
               />
             </div>
-            <Typography
-              variant='h6'
-              noWrap
-              component='div'
-              display='flex'
-              alignItems='right'>
+            <Typography variant="h6" noWrap component="div" display="flex" alignItems="right">
               <MenuListComposition
                 listOptions={false}
                 isGroup={currRoom.current.isGroup}
@@ -585,36 +522,33 @@ const ResponsiveDrawer = (props) => {
           </Toolbar>
         </AppBar>
       )}
-      <Box
-        component='nav'
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label='mailbox folders'>
+      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} aria-label="mailbox folders">
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           container={container}
-          variant='temporary'
+          variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true // Better open performance on mobile.
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
-              width: '100%',
-            },
+              width: '100%'
+            }
           }}>
           {drawer}
         </Drawer>
         <Drawer
-          variant='permanent'
+          variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
-              width: drawerWidth,
-            },
+              width: drawerWidth
+            }
           }}
           open>
           {drawer}
@@ -623,11 +557,11 @@ const ResponsiveDrawer = (props) => {
       {currRoom.current._id && (
         <>
           <Box
-            component='main'
+            component="main"
             sx={{
               flexGrow: 1,
               p: 3,
-              width: { sm: `calc(100% - ${drawerWidth}px)` },
+              width: { sm: `calc(100% - ${drawerWidth}px)` }
             }}>
             <Toolbar />
             <div style={{ paddingBottom: '70px' }} ref={scrollableRef}>
@@ -636,37 +570,23 @@ const ResponsiveDrawer = (props) => {
                   key={index}
                   message={el.message}
                   sender={el.senderName}
-                  align={
-                    el.senderId !== localStorage.getItem('_id')
-                      ? 'left'
-                      : 'right'
-                  }
+                  align={el.senderId !== localStorage.getItem('_id') ? 'left' : 'right'}
                   timestamp={moment(el.createdOn).format('hh:mm a')}
                   status={el.status}
                 />
               ))}
               {typing && (
                 <MessageBox
-                  message=''
-                  sender=''
-                  align='left'
-                  timestamp=''
-                  element={
-                    <Lottie
-                      width={70}
-                      options={defaultOptions}
-                      style={{ padding: '0', marginLeft: '-20px' }}
-                    />
-                  }
+                  message=""
+                  sender=""
+                  align="left"
+                  timestamp=""
+                  element={<Lottie width={70} options={defaultOptions} style={{ padding: '0', marginLeft: '-20px' }} />}
                 />
               )}
             </div>
           </Box>
-          <ChatMessageBar
-            typingHandler={typingHandler}
-            onSend={sendMessage}
-            drawerWidth={drawerWidth}
-          />
+          <ChatMessageBar typingHandler={typingHandler} onSend={sendMessage} drawerWidth={drawerWidth} />
         </>
       )}
     </Box>
@@ -678,7 +598,7 @@ ResponsiveDrawer.propTypes = {
    * Injected by the documentation to work in an iframe.
    * You won't need it on your project.
    */
-  window: PropTypes.func,
+  window: PropTypes.func
 };
 
 export default ResponsiveDrawer;

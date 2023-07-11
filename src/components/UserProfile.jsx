@@ -13,7 +13,7 @@ const config = {
   dirName: 'profile',
   region: process.env.REACT_APP_REGION,
   accessKeyId: process.env.REACT_APP_AWSAccessKeyId,
-  secretAccessKey: process.env.REACT_APP_AWSSecretAccessKey,
+  secretAccessKey: process.env.REACT_APP_AWSSecretAccessKey
 };
 
 const UserProfile = ({ editAccess, setOpen }) => {
@@ -21,51 +21,47 @@ const UserProfile = ({ editAccess, setOpen }) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [severity, setSeverity] = useState('success');
   const [snackBarMessage, setSnackBarMessage] = useState('');
-  const addImages = (event) => {
+  const addImages = event => {
     const images = [];
-    [...event.target.files].forEach((img) => {
+    [...event.target.files].forEach(img => {
       const url = URL.createObjectURL(img);
       images.push({ file: img, url });
     });
     const file = event.target.files[0];
+    // eslint-disable-next-line no-new
     new Compressor(file, {
       quality: 0.4, // Adjust the quality value as per your requirement
-      success: (compressedResult) => {
+      success: compressedResult => {
         // compressedResult has the compressed file.
         // Use the compressed file to upload the images to your server.
         compressedResult.name = localStorage.getItem('_id');
-        console.log(compressedResult.name);
         ReactS3.uploadFile(compressedResult, config)
-          .then((data) => {
+          .then(data => {
             const patchData = { photoUrl: data.location };
             axios
-              .patch(
-                `${baseApi}/api/users/${localStorage.getItem('_id')}`,
-                patchData,
-                {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem('Token')}`,
-                  },
+              .patch(`${baseApi}/api/users/${localStorage.getItem('_id')}`, patchData, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('Token')}`
                 }
-              )
-              .then((res) => {
+              })
+              .then(() => {
                 setSeverity('success');
                 setSnackBarMessage(`Successfully updated profile picture`);
                 setOpenSnackBar(true);
                 localStorage.setItem('photoUrl', data.location);
               })
-              .catch((err) => {
+              .catch(err => {
                 setSeverity('error');
                 setSnackBarMessage(err.message);
                 setOpenSnackBar(true);
                 console.error(err);
               });
           })
-          .catch((err) => {
+          .catch(err => {
             setImage(false);
             return console.error(err);
           });
-      },
+      }
     });
 
     if (images && images[0]?.url) {
@@ -78,82 +74,73 @@ const UserProfile = ({ editAccess, setOpen }) => {
     top: '4%',
     left: '7%',
     color: 'black',
-    zIndex: '2',
+    zIndex: '2'
   };
 
   return (
     <div style={{ position: 'relative' }}>
-      <SnackBar
-        message={snackBarMessage}
-        open={openSnackBar}
-        setOpen={setOpenSnackBar}
-        severity={severity}
-      />
+      <SnackBar message={snackBarMessage} open={openSnackBar} setOpen={setOpenSnackBar} severity={severity} />
 
       <ArrowBackIcon sx={headerStyle} onClick={() => setOpen(false)} />
 
-      <div className='body-container'>
-        <div className='container'>
-          <div className='avatar'>
-            <label htmlFor='file-input'>
+      <div className="body-container">
+        <div className="container">
+          <div className="avatar">
+            <label htmlFor="file-input">
               <Avatar
                 alt={localStorage.getItem('name')}
-                src={
-                  image ||
-                  localStorage.getItem('photoUrl') ||
-                  '/static/images/avatar/1.jpg'
-                }
+                src={image || localStorage.getItem('photoUrl') || '/static/images/avatar/1.jpg'}
                 sx={{
                   width: 165,
                   height: 165,
                   borderRadius: '50%',
                   backgroundColor: 'orange',
-                  fontSize: '4rem',
+                  fontSize: '4rem'
                 }}
               />
-              <div className='plus-icon'>+</div>
+              <div className="plus-icon">+</div>
             </label>
             <input
-              id='file-input'
-              type='file'
-              accept='image/jpg, image/jpeg, image/png, image/svg, image/svg+xml'
+              id="file-input"
+              type="file"
+              accept="image/jpg, image/jpeg, image/png, image/svg, image/svg+xml"
               style={{ display: 'none' }}
               onChange={addImages}
             />
           </div>
-          <div className='username'>
+          <div className="username">
             <h3>{localStorage.getItem('name')}</h3>
           </div>
-          <div className='button' data-target='#home'>
-            <div className='button__icon'>
-              <i className='fa-solid fa-house'></i>
+          <div className="button" data-target="#home">
+            <div className="button__icon">
+              <i className="fa-solid fa-house"></i>
             </div>
-            <div className='button__text'>Home</div>
+            <div className="button__text">Home</div>
           </div>
-          <div className='button' data-target='#contact'>
-            <div className='button__icon'>
-              <i className='fa-solid fa-phone'></i>
+          <div className="button" data-target="#contact">
+            <div className="button__icon">
+              <i className="fa-solid fa-phone"></i>
             </div>
-            <div className='button__text'>Contact</div>
+            <div className="button__text">Contact</div>
           </div>
-          <div className='button' data-target='#about'>
-            <div className='button__icon'>
-              <i className='fa-solid fa-user'></i>
+          <div className="button" data-target="#about">
+            <div className="button__icon">
+              <i className="fa-solid fa-user"></i>
             </div>
-            <div className='button__text'>About</div>
+            <div className="button__text">About</div>
           </div>
-          <div className='button' data-target='#education'>
-            <div className='button__icon'>
-              <i className='fa-solid fa-user-graduate'></i>
+          <div className="button" data-target="#education">
+            <div className="button__icon">
+              <i className="fa-solid fa-user-graduate"></i>
             </div>
-            <div className='button__text'>Education</div>
+            <div className="button__text">Education</div>
           </div>
         </div>
-        <div className='page' id='home'>
-          <div className='page__header'>
-            <div className='page__title'>Home</div>
-            <div className='page__close'>
-              <i className='fa-solid fa-xmark'></i>
+        <div className="page" id="home">
+          <div className="page__header">
+            <div className="page__title">Home</div>
+            <div className="page__close">
+              <i className="fa-solid fa-xmark"></i>
             </div>
           </div>
         </div>

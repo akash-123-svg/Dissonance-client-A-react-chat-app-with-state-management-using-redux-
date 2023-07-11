@@ -6,7 +6,7 @@ import chatListReducer from './chatListReducer';
 const reducers = combineReducers({
   userReducer,
   roomReducer,
-  chatListReducer,
+  chatListReducer
 });
 
 export default reducers;

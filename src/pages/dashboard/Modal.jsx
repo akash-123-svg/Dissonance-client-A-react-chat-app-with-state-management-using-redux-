@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -17,7 +18,7 @@ export default function Modal({
   setOpen,
   showIconButton = true,
   isGroup = false,
-  showGroupNameInputBox = true,
+  showGroupNameInputBox = true
 }) {
   // const [open, setOpen] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -47,13 +48,7 @@ export default function Modal({
         return;
       }
     }
-    if (
-      !(
-        value &&
-        validateFormData({ mobile: value }) &&
-        value !== localStorage.getItem('mobile')
-      )
-    ) {
+    if (!(value && validateFormData({ mobile: value }) && value !== localStorage.getItem('mobile'))) {
       setSeverity('error');
       setSnackBarMessage('Please enter valid mobile number!');
       setOpenSnackBar(true);
@@ -68,49 +63,39 @@ export default function Modal({
   return (
     <div>
       {showIconButton && (
-        <IconButton
-          color='inherit'
-          sx={{ color: 'orange' }}
-          onClick={handleClickOpen}>
+        <IconButton color="inherit" sx={{ color: 'orange' }} onClick={handleClickOpen}>
           {element}
         </IconButton>
       )}
 
-      <SnackBar
-        message={snackBarMessage}
-        open={openSnackBar}
-        setOpen={setOpenSnackBar}
-        severity={severity}
-      />
+      <SnackBar message={snackBarMessage} open={openSnackBar} setOpen={setOpenSnackBar} severity={severity} />
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Start Messaging</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To start messaging, please enter mobile number here.
-          </DialogContentText>
+          <DialogContentText>To start messaging, please enter mobile number here.</DialogContentText>
           {isGroup && showGroupNameInputBox && (
             <TextField
               autoFocus
-              margin='dense'
-              id='name'
-              label='Group name'
-              type='text'
+              margin="dense"
+              id="name"
+              label="Group name"
+              type="text"
               fullWidth
-              variant='standard'
-              onChange={(event) => {
+              variant="standard"
+              onChange={event => {
                 setRoomName(event.target.value);
               }}
             />
           )}
           <TextField
             autoFocus
-            margin='dense'
-            id='mobile'
-            label='Mobile number'
+            margin="dense"
+            id="mobile"
+            label="Mobile number"
             fullWidth
-            variant='standard'
-            onChange={(event) => {
+            variant="standard"
+            onChange={event => {
               setValue(event.target.value);
             }}
           />
@@ -123,3 +108,17 @@ export default function Modal({
     </div>
   );
 }
+
+Modal.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  addUser: PropTypes.func,
+  element: PropTypes.any,
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+  showIconButton: PropTypes.bool,
+  isGroup: PropTypes.bool,
+  showGroupNameInputBox: PropTypes.bool
+};

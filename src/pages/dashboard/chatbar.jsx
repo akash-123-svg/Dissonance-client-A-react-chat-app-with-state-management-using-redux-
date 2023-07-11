@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -7,9 +8,9 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-import { baseLocalApi } from '../../utils/utility';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { baseLocalApi } from '../../utils/utility';
 import { actionCreators } from '../../state/index';
 import CircleNumber from '../../components/CircleNumber';
 import CommonModal from '../../components/CommonModal';
@@ -22,21 +23,21 @@ const AlignItemsList = ({ setRoom }) => {
   const dispatch = useDispatch();
   const { setChatList } = bindActionCreators(actionCreators, dispatch);
   const data = [
-    ...useSelector((state) => {
+    ...useSelector(state => {
       return state.chatListReducer.rooms;
-    }),
+    })
   ];
   useEffect(() => {
     axios
       .get(`${baseLocalApi}/rooms/${localStorage.getItem('_id')}`, {
         headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('Token'),
-        },
+          Authorization: `Bearer ${localStorage.getItem('Token')}`
+        }
       })
-      .then((res) => {
+      .then(res => {
         setChatList({ rooms: res.data.rooms });
       })
-      .catch((err) => console.error(err));
+      .catch(err => console.error(err));
   }, []);
 
   return (
@@ -54,7 +55,7 @@ const AlignItemsList = ({ setRoom }) => {
               height: 315,
               borderRadius: '50%',
               backgroundColor: 'orange',
-              fontSize: '4rem',
+              fontSize: '4rem'
             }}
           />
         }
@@ -63,9 +64,7 @@ const AlignItemsList = ({ setRoom }) => {
         (el, index) =>
           el && (
             <div key={index}>
-              <ListItem
-                alignItems='flex-start'
-                className='hover:bg-sky-100 cursor-pointer transition duration-300'>
+              <ListItem alignItems="flex-start" className="hover:bg-sky-100 cursor-pointer transition duration-300">
                 <ListItemAvatar>
                   <Avatar
                     alt={el.isGroup ? el.name : el.receiverName}
@@ -87,8 +86,8 @@ const AlignItemsList = ({ setRoom }) => {
                     <React.Fragment>
                       <Typography
                         sx={{ display: 'inline' }}
-                        component='span'
-                        variant='body2'
+                        component="span"
+                        variant="body2"
                         color={el.notSeenCount > 0 ? 'green' : 'text.primary'}>
                         {(el.lastMessage && el.lastMessage.senderName) || ''}
                       </Typography>
@@ -96,16 +95,22 @@ const AlignItemsList = ({ setRoom }) => {
                     </React.Fragment>
                   }
                 />
-                {el.notSeenCount > 0 && (
-                  <CircleNumber number={el.notSeenCount} />
-                )}
+                {el.notSeenCount > 0 && <CircleNumber number={el.notSeenCount} />}
               </ListItem>
-              <Divider variant='inset' component='li' />
+              <Divider variant="inset" component="li" />
             </div>
           )
       )}
     </List>
   );
+};
+
+AlignItemsList.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  setRoom: PropTypes.func
 };
 
 export default AlignItemsList;

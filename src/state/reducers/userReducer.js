@@ -2,13 +2,13 @@ export const initialState = {
   user: null,
   uid: null,
   togglerState: 1,
-  photoURL: '',
+  photoURL: ''
 };
 
 export const actionTypes = {
   SET_USER: 'SET_USER',
   SET_SESSION: 'SET_SESSION',
-  SET_TOGGLER: 'SET_TOGGLER',
+  SET_TOGGLER: 'SET_TOGGLER'
 };
 
 const reducer = (state = initialState, action) => {
@@ -16,7 +16,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SET_USER:
       return {
         ...state,
-        user: action.user,
+        user: action.user
       };
     case actionTypes.SET_SESSION:
       localStorage.setItem('uid', action.uid);
@@ -28,12 +28,12 @@ const reducer = (state = initialState, action) => {
         _id: action._id,
         name: action.name,
         photoUrl: action.photoUrl,
-        Token: action.Token,
+        Token: action.Token
       };
     case actionTypes.SET_TOGGLER:
       return {
         ...state,
-        togglerState: action.togglerState,
+        togglerState: action.togglerState
       };
 
     default:

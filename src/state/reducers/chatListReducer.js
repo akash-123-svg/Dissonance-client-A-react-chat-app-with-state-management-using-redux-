@@ -1,9 +1,9 @@
 export const initialState = {
-  rooms: [],
+  rooms: []
 };
 
 export const actionTypes = {
-  SET_CHAT_LIST: 'SET_CHAT_LIST',
+  SET_CHAT_LIST: 'SET_CHAT_LIST'
 };
 
 const reducer = (state = initialState, action) => {
@@ -11,7 +11,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SET_CHAT_LIST:
       return {
         ...state,
-        rooms: action.rooms,
+        rooms: action.rooms
       };
 
     default:

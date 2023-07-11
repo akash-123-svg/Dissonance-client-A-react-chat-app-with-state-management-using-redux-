@@ -1,18 +1,16 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
 import { Check, DoneAll, ScheduleTwoTone } from '@mui/icons-material';
 
 const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
   const alignStyle = {
-    justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
+    justifyContent: align === 'right' ? 'flex-end' : 'flex-start'
   };
 
   const messageBoxStyle = {
-    background: element
-      ? 'transparent'
-      : align === 'right'
-      ? '#2979ff'
-      : '#f5f5f5',
+    background: element ? 'transparent' : align === 'right' ? '#2979ff' : '#f5f5f5',
     color: align === 'right' ? '#fff' : '#000',
     borderRadius: '8px',
     padding: '8px',
@@ -22,14 +20,14 @@ const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
     position: 'relative',
     minWidth: '100px',
     display: 'inline-block',
-    wordBreak: 'break-word',
+    wordBreak: 'break-word'
   };
 
   const senderStyle = {
     color: align === 'right' ? '#fff' : '#888',
     fontSize: '12px',
     marginBottom: '4px',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   };
 
   const timestampStyle = {
@@ -37,34 +35,36 @@ const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
     fontSize: '10px',
     marginLeft: '8px',
     alignSelf: 'flex-end',
-    wordBreak: 'break-all', // Allow wrapping of long single-line timestamps
+    wordBreak: 'break-all' // Allow wrapping of long single-line timestamps
   };
 
   const statusIconStyle = {
     fontSize: '16px',
     marginLeft: '4px',
-    verticalAlign: 'middle',
+    verticalAlign: 'middle'
   };
 
   const getStatusIcon = () => {
     if (status === 'delivered') {
       return <Check style={statusIconStyle} />;
-    } else if (status === 'seen') {
+    }
+    if (status === 'seen') {
       return <DoneAll style={statusIconStyle} />;
-    } else if (status === 'not_delivered') {
+    }
+    if (status === 'not_delivered') {
       return <ScheduleTwoTone style={statusIconStyle} />;
     }
     return null;
   };
 
   return (
-    <Box display='flex' flexDirection='column' style={alignStyle}>
-      <Typography variant='caption' style={senderStyle}>
+    <Box display="flex" flexDirection="column" style={alignStyle}>
+      <Typography variant="caption" style={senderStyle}>
         {sender}
       </Typography>
       <Box style={messageBoxStyle}>
         {element}
-        <Typography variant='body1' component='p' sx={{ marginBottom: '10px' }}>
+        <Typography variant="body1" component="p" sx={{ marginBottom: '10px' }}>
           {message}
         </Typography>
         <div
@@ -72,9 +72,9 @@ const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
             display: 'flex',
             position: 'absolute',
             bottom: '3px',
-            right: '3px',
+            right: '3px'
           }}>
-          <Typography variant='caption' style={timestampStyle}>
+          <Typography variant="caption" style={timestampStyle}>
             {timestamp}
             {align === 'right' && status && getStatusIcon()}
           </Typography>
@@ -82,6 +82,19 @@ const MessageBox = ({ message, sender, align, timestamp, status, element }) => {
       </Box>
     </Box>
   );
+};
+
+MessageBox.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  message: PropTypes.string,
+  sender: PropTypes.string,
+  align: PropTypes.string,
+  timestamp: PropTypes.string,
+  status: PropTypes.string,
+  element: PropTypes.any
 };
 
 export default MessageBox;

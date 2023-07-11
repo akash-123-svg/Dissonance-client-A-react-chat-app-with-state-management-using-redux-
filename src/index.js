@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import App from './App';
 import { store } from './state/store';
 import './index.css';
 
@@ -20,15 +20,14 @@ const startApp = () => {
 const startCordovaApp = () => {
   window.plugins.OneSignal.setAppId('31624c1f-53a1-475e-9ac0-c842a4d9a2d8');
   window.plugins.OneSignal.setNotificationOpenedHandler(function (jsonData) {
-    console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
+    console.log(`notificationOpenedCallback: ${JSON.stringify(jsonData)}`);
   });
 
-  //Prompts the user for notification permissions.
-  //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt for notification permission (See step 6) to better communicate to your users what notifications they will get.
-  window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function (
-    accepted
-  ) {
-    console.log('User accepted notifications: ' + accepted);
+  // Prompts the user for notification permissions.
+  //    * Since this shows a generic native prompt,
+  //  we recommend instead using an In-App Message to prompt for notification permission (See step 6) to better communicate to your users what notifications they will get.
+  window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function (accepted) {
+    console.log(`User accepted notifications: ${accepted}`);
   });
   startApp();
 };

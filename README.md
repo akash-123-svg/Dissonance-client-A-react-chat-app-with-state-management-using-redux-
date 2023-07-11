@@ -37,6 +37,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 # Cordova (Building Android / IOS app)
 
+configure cordova in your system.
+### For more follow this link 
+[https://cordova.apache.org/docs/en/11.x/guide/cli/]
+
 You can build android / ios app by following  :
 
 ### `npm i`
@@ -47,13 +51,16 @@ Downloads the dependencies for this project.
 
 Builds the app for production to the `www` folder and Cordova needs www folder to be there.
 
+### `cordova platform add android`
+
+Adds android as a platform
+
 ### Install an emulator or connect your mobile phone via cable and turn usb debugger on or you can use wireless debugging
 
 ### Run `cordova run android`
 It builds and installs apk file in your mobile / emulator
 
-### For more follow this link 
-[https://cordova.apache.org/docs/en/11.x/guide/cli/]
+
 
 
 

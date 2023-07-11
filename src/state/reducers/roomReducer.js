@@ -4,11 +4,11 @@ export const initialState = {
   photoUrl: '',
   createdOn: '',
   admins: [],
-  users: [],
+  users: []
 };
 
 export const actionTypes = {
-  SET_ROOM: 'SET_ROOM',
+  SET_ROOM: 'SET_ROOM'
 };
 
 const reducer = (state = initialState, action) => {
@@ -21,7 +21,7 @@ const reducer = (state = initialState, action) => {
         photoUrl: action.photoUrl,
         createdOn: action.createdOn,
         admins: action.admins,
-        users: action.users,
+        users: action.users
       };
 
     default:

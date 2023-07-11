@@ -11,7 +11,7 @@ const style = {
   width: '100vw',
   bgcolor: 'background.paper',
   border: '2px solid #000',
-  boxShadow: 24,
+  boxShadow: 24
 };
 
 const previewImageStyle = {
@@ -22,16 +22,10 @@ const previewImageStyle = {
   bgcolor: 'transparent',
   border: '2px transparent',
   borderRadius: '50%',
-  boxShadow: 24,
+  boxShadow: 24
 };
 
-export default function BasicModal({
-  open,
-  setOpen,
-  title,
-  element,
-  previewImage,
-}) {
+export default function BasicModal({ open, setOpen, title, element, previewImage }) {
   const handleClose = () => {
     setOpen(false);
   };
@@ -40,10 +34,10 @@ export default function BasicModal({
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby='modal-modal-title'
-        aria-describedby='modal-modal-description'>
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
         <Box sx={previewImage ? previewImageStyle : style}>
-          <Typography id='modal-modal-title' variant='h6' component='h2'>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
             {title}
           </Typography>
           {element}

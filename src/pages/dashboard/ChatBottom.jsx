@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { TextField, IconButton } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import EmojiPicker from './EmojiPicker';
 import { EmojiEmotions, Close } from '@mui/icons-material';
+import EmojiPicker from './EmojiPicker';
 
 const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
   const [message, setMessage] = useState('');
@@ -10,7 +11,7 @@ const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
   const [inputRows, setInputRows] = useState(1); // Number of rows in the input field
   const inputRef = useRef(null);
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = event => {
     if (event.key === 'Enter' && message) {
       onSend(message);
       setMessage('');
@@ -66,20 +67,14 @@ const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
           ? {}
           : {
               width: `calc(100% - ${drawerWidth}px)`,
-              marginLeft: `${drawerWidth}px`,
-            }),
+              marginLeft: `${drawerWidth}px`
+            })
       }}>
       <div style={{ position: 'absolute', bottom: '15px', left: '-1px' }}>
-        {openEmojiPicker && (
-          <EmojiPicker setMessage={setMessage} message={message} />
-        )}
+        {openEmojiPicker && <EmojiPicker setMessage={setMessage} message={message} />}
 
         <IconButton onClick={toggleEmojiPicker}>
-          {openEmojiPicker ? (
-            <Close />
-          ) : (
-            <EmojiEmotions sx={{ color: 'grey' }} />
-          )}
+          {openEmojiPicker ? <Close /> : <EmojiEmotions sx={{ color: 'grey' }} />}
         </IconButton>
       </div>
       <TextField
@@ -87,9 +82,9 @@ const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
         fullWidth
         multiline
         rows={inputRows}
-        placeholder='Type your message here'
+        placeholder="Type your message here"
         value={message}
-        onChange={(event) => {
+        onChange={event => {
           setMessage(event.target.value);
           typingHandler();
         }}
@@ -101,6 +96,16 @@ const ChatMessageBar = ({ onSend, drawerWidth, typingHandler }) => {
       </IconButton>
     </div>
   );
+};
+
+ChatMessageBar.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  onSend: PropTypes.func,
+  drawerWidth: PropTypes.number,
+  typingHandler: PropTypes.func
 };
 
 export default ChatMessageBar;

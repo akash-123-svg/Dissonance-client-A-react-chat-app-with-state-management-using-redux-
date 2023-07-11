@@ -1,10 +1,8 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
-const paths = require('./paths');
 const chalk = require('react-dev-utils/chalk');
 const resolve = require('resolve');
+const paths = require('./paths');
 
 /**
  * Get additional module paths based on the baseUrl of a compilerOptions object.
@@ -12,7 +10,7 @@ const resolve = require('resolve');
  * @param {Object} options
  */
 function getAdditionalModulePaths(options = {}) {
-  const baseUrl = options.baseUrl;
+  const { baseUrl } = options;
 
   if (!baseUrl) {
     return '';
@@ -55,7 +53,7 @@ function getAdditionalModulePaths(options = {}) {
  * @param {*} options
  */
 function getWebpackAliases(options = {}) {
-  const baseUrl = options.baseUrl;
+  const { baseUrl } = options;
 
   if (!baseUrl) {
     return {};
@@ -65,7 +63,7 @@ function getWebpackAliases(options = {}) {
 
   if (path.relative(paths.appPath, baseUrlResolved) === '') {
     return {
-      src: paths.appSrc,
+      src: paths.appSrc
     };
   }
 }
@@ -76,7 +74,7 @@ function getWebpackAliases(options = {}) {
  * @param {*} options
  */
 function getJestAliases(options = {}) {
-  const baseUrl = options.baseUrl;
+  const { baseUrl } = options;
 
   if (!baseUrl) {
     return {};
@@ -86,7 +84,7 @@ function getJestAliases(options = {}) {
 
   if (path.relative(paths.appPath, baseUrlResolved) === '') {
     return {
-      '^src/(.*)$': '<rootDir>/src/$1',
+      '^src/(.*)$': '<rootDir>/src/$1'
     };
   }
 }
@@ -109,7 +107,7 @@ function getModules() {
   // based on tsconfig.json
   if (hasTsConfig) {
     const ts = require(resolve.sync('typescript', {
-      basedir: paths.appNodeModules,
+      basedir: paths.appNodeModules
     }));
     config = ts.readConfigFile(paths.appTsConfig, ts.sys.readFile).config;
     // Otherwise we'll check if there is jsconfig.json
@@ -124,10 +122,10 @@ function getModules() {
   const additionalModulePaths = getAdditionalModulePaths(options);
 
   return {
-    additionalModulePaths: additionalModulePaths,
+    additionalModulePaths,
     webpackAliases: getWebpackAliases(options),
     jestAliases: getJestAliases(options),
-    hasTsConfig,
+    hasTsConfig
   };
 }
 

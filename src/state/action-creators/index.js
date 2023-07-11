@@ -1,37 +1,35 @@
-
-export const setUser = (props) => {
-  return (dispatch) => {
+export const setUser = props => {
+  return dispatch => {
     dispatch({
       type: 'SET_USER',
-      ...props,
+      ...props
     });
   };
 };
 
-export const setSession = (props) => {
-  return (dispatch) => {
+export const setSession = props => {
+  return dispatch => {
     dispatch({
       type: 'SET_SESSION',
-      ...props,
+      ...props
     });
   };
 };
 
-export const setCurrentRoom = (props) => {
-  return (dispatch) => {
+export const setCurrentRoom = props => {
+  return dispatch => {
     dispatch({
       type: 'SET_ROOM',
-      ...props,
+      ...props
     });
   };
 };
 
-export const setChatList = (props) => {
-  return (dispatch) => {
+export const setChatList = props => {
+  return dispatch => {
     dispatch({
       type: 'SET_CHAT_LIST',
-      ...props,
+      ...props
     });
   };
 };
-

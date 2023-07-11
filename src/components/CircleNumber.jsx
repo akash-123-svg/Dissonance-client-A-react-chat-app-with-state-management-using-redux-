@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const CircleNumber = ({ number }) => {
   const circleStyle = {
@@ -12,7 +13,7 @@ const CircleNumber = ({ number }) => {
     color: '#ffffff',
     fontSize: '12px',
     fontWeight: 'bold',
-    marginTop:'18px'
+    marginTop: '18px'
   };
 
   return (
@@ -20,7 +21,7 @@ const CircleNumber = ({ number }) => {
       style={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
       }}>
       <div style={circleStyle}>{number}</div>
     </div>
@@ -28,3 +29,7 @@ const CircleNumber = ({ number }) => {
 };
 
 export default CircleNumber;
+
+CircleNumber.prototypes = {
+  number: PropTypes.number
+};
