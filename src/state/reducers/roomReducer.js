@@ -11,6 +11,7 @@ export const actionTypes = {
   SET_ROOM: 'SET_ROOM'
 };
 
+// eslint-disable-next-line default-param-last
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_ROOM:

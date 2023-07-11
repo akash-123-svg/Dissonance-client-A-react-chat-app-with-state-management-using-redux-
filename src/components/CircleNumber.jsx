@@ -28,8 +28,8 @@ const CircleNumber = ({ number }) => {
   );
 };
 
-export default CircleNumber;
-
-CircleNumber.prototypes = {
+CircleNumber.propTypes = {
   number: PropTypes.number
 };
+
+export default CircleNumber;

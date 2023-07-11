@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -25,3 +26,14 @@ export default function CustomizedSnackbars({ open, setOpen, severity, message }
     </Stack>
   );
 }
+
+CustomizedSnackbars.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  message: PropTypes.string,
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+  severity: PropTypes.string
+};

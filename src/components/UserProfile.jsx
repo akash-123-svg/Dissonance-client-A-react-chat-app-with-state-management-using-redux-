@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Avatar } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ReactS3 from 'react-s3';
-import { baseApi } from '../utils/utility';
 import axios from 'axios';
-import SnackBar from './SnackBar';
 import Compressor from 'compressorjs';
+import { baseApi } from '../utils/utility';
+import SnackBar from './SnackBar';
+
+// eslint-disable-next-line global-require
 window.Buffer = window.Buffer || require('buffer').Buffer;
 
 const config = {
@@ -16,6 +19,7 @@ const config = {
   secretAccessKey: process.env.REACT_APP_AWSSecretAccessKey
 };
 
+// eslint-disable-next-line no-unused-vars
 const UserProfile = ({ editAccess, setOpen }) => {
   const [image, setImage] = useState();
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -147,6 +151,15 @@ const UserProfile = ({ editAccess, setOpen }) => {
       </div>
     </div>
   );
+};
+
+UserProfile.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  editAccess: PropTypes.bool,
+  setOpen: PropTypes.func
 };
 
 export default UserProfile;

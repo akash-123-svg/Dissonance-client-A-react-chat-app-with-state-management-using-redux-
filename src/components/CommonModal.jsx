@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -46,3 +47,15 @@ export default function BasicModal({ open, setOpen, title, element, previewImage
     </div>
   );
 }
+
+BasicModal.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+  title: PropTypes.string,
+  element: PropTypes.any,
+  previewImage: PropTypes.bool
+};
